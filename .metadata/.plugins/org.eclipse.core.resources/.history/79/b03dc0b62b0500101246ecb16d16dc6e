@@ -1,0 +1,77 @@
+/*
+ * cs43l22.c
+ *
+ *  Created on: Mar 19, 2025
+ *      Author: shtuk
+ */
+#ifndef __CS43L22_H
+#define __CS43L22_H
+
+#define SAMPLE_RATE 48000   // 48 kHz sample rate
+#define SAMPLE_FREQUENCY 1000 // 1 kHz tone frequency
+#define VOLUME 0x7F         // Set volume (max)
+#define TONE_DURATION 2     // Duration of the tone in seconds
+
+#define BUFFER_SIZE (SAMPLE_RATE / SAMPLE_FREQUENCY)
+
+int16_t signal_buffer[BUFFER_SIZE];
+
+void generateSignal(void)
+{
+    for (int i = 0; i < BUFFER_SIZE; i++)
+    {
+        signal_buffer[i] = (int16_t)(sin(2 * M_PI * SAMPLE_FREQUENCY * i / SAMPLE_RATE) * VOLUME);
+    }
+}
+
+static void CS43L22_WriteReg(uint8_t reg, uint8_t value) {
+
+	uint8_t data[2] = { reg, value };
+
+    HAL_StatusTypeDef ret = HAL_I2C_Master_Transmit(&hi2c1, CS43L22_I2C_ADDR, data, 2, HAL_MAX_DELAY);
+
+    if (ret != HAL_OK)
+    {
+    }
+}
+
+static uint8_t CS43L22_ReadReg(uint8_t reg)
+{
+    uint8_t value;
+
+    HAL_StatusTypeDef ret = HAL_I2C_Master_Transmit(&hi2c1, CS43L22_I2C_ADDR, &reg, 1, HAL_MAX_DELAY);
+
+    if (ret != HAL_OK)
+    {
+    }
+
+    ret = HAL_I2C_Master_Receive(&hi2c1, CS43L22_I2C_ADDR, &value, 1, HAL_MAX_DELAY);
+
+    if (ret != HAL_OK)
+    {
+    }
+
+    return value;
+}
+
+
+extern I2C_HandleTypeDef hi2c1;
+extern I2S_HandleTypeDef hi2s3;
+
+
+void CS43L22_Init(void);
+void CS43L22_DeInit(void);
+void CS43L22_SetVolumet(uint8_t);
+void CS43L22_Mutet(void);
+void CS43L22_Startt(void);
+void CS43L22_Playt(void);
+void CS43L22_Stopt(void);
+void CS43L22_EnableRightLeftt(void);
+
+
+
+
+
+
+
+
